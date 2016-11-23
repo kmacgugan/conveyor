@@ -1,0 +1,12 @@
+[package]
+name = "conveyor"
+version = "0.1.0"
+authors = ["kmacgugan <kmacgugan@chef.io>"]
+
+[dependencies]
+serde = "*"
+serde_json = "*"
+serde_derive = "*"
+uuid = { version = "*", features = ["serde", "v4"] }
+amqp = "*"
+env_logger = "*"
