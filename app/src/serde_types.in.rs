@@ -1,6 +1,4 @@
 
-extern crate serde_derive;
-extern crate serde_json;
 extern crate uuid;
 
 use self::uuid::Uuid;
@@ -51,7 +49,12 @@ pub struct LamportClock {
 
 #[derive(Serialize, Deserialize)]
 pub struct Configuration {
-    pub error: Option<Error>
+    pub error: Option<Error>,
+    pub bind: Option<Map<String, String>>,
+    pub hab: Option<Map<String, String>>,
+    pub pkg: Option<String>,
+    pub deps: Option<Vec<String>>,
+    pub sys: Option<Map<String,String>>
 }
 
 #[derive(Serialize, Deserialize)]

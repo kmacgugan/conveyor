@@ -1,0 +1,23 @@
+version: "2"
+services:
+  conveyor:
+    image: kmacgugan/conveyor
+    links:
+      - rabbitmq
+    environment:
+      - AMQP_HOST=rabbitmq
+      - RABBITMQ_DEFAULT_USER=insights
+      - RABBITMQ_DEFAULT_PASS=chefrocks
+      - RABBITMQ_DEFAULT_VHOST=/insights
+    volumes:
+      - ./habitat:/shared/habitat
+    command: start kmacgugan/conveyor --config-from /shared/habitat
+  rabbitmq:
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=insights
+      - RABBITMQ_DEFAULT_PASS=chefrocks
+      - RABBITMQ_DEFAULT_VHOST=/insights
+    ports:
+      - "5672:5672"
+      - "15672:15672"
