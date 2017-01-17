@@ -3,14 +3,10 @@ extern crate env_logger;
 extern crate serde;
 extern crate serde_json;
 
-//use std::thread;
-use std::io;
-
 use self::amqp::{Session, Options, Table, Basic, protocol, Channel, ConsumerCallBackFn};
 use std::default::Default;
+use elastic_output;
 
-// This is to support stable rust 1.13. https://serde.rs/codegen-stable.html
-include!(concat!(env!("OUT_DIR"), "/serde_types.rs"));
 
 fn consumer_function(channel: &mut Channel, deliver: protocol::basic::Deliver, headers: protocol::basic::BasicProperties, body: Vec<u8>){
     println!("[function] Got a delivery:");
@@ -18,17 +14,18 @@ fn consumer_function(channel: &mut Channel, deliver: protocol::basic::Deliver, h
     println!("[function] Content headers: {:?}", headers);
     let body_as_string = String::from_utf8(body).unwrap();
     println!("[function] Content body(as string): {:?}", body_as_string);
-    parse_census(body_as_string);
+    let habitat_data : elastic_output::Census = parse_census(&body_as_string);
+    elastic_output::publish_habitat(habitat_data.ring_id, body_as_string);
     channel.basic_ack(deliver.delivery_tag, false).unwrap();
 }
 
-pub fn parse_census(contents: String) -> io::Result<()>  {
-    let census : Census = match serde_json::from_str(&contents) {
+pub fn parse_census(contents: &String) -> elastic_output::Census {
+    let census : elastic_output::Census = match serde_json::from_str(&contents) {
         Err(why) => panic!("Couldn't serialize json: {}", why),
         Ok(census) => census,
     };
     println!("Ring id is {}", census.ring_id);
-    Ok(())
+    census
 }
 
 pub fn consume() {
@@ -78,7 +75,7 @@ mod tests {
     use std::io;
     #[test]
     fn parses_json() {
-        let file_result = read_file("/Users/kmacgugan/chef/conveyor/app/data/message.json");
+        let file_result = read_file("/Users/kmacgugan/chef/conveyor/app/data/census.json");
         let contents = match file_result {
             Err(why) => panic!("couldn't read file: {}", why),
             Ok(contents) => contents,

@@ -19,7 +19,7 @@ pub struct ServiceGroup{
     pub in_event: bool,
     pub service: String,
     pub group: String,
-    pub organization: String,
+    pub organization: Option<String>,
     pub members: Map<Uuid, Member>,
 }
 
@@ -44,7 +44,7 @@ pub struct Member {
 
 #[derive(Serialize, Deserialize)]
 pub struct LamportClock {
-    pub counter: u32
+    pub counter: u64
 }
 
 #[derive(Serialize, Deserialize)]
@@ -54,11 +54,21 @@ pub struct Configuration {
     pub hab: Option<Map<String, String>>,
     pub pkg: Option<String>,
     pub deps: Option<Vec<String>>,
-    pub sys: Option<Map<String,String>>
+    pub sys: Option<Sys>
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct Error {
     pub status: u32,
     pub message: String
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Sys {
+    pub gossip_ip: Option<String>,
+    pub gossip_port: Option<u32>,
+    pub hostname: Option<String>,
+    pub ip: Option<String>,
+    pub sidecar_ip: Option<String>,
+    pub sidecar_port: Option<u32>
 }

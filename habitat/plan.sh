@@ -60,6 +60,7 @@ do_build() {
 do_install() {
   mkdir $pkg_prefix/bin
   cp $HAB_CACHE_SRC_PATH/$pkg_dirname/$program/target/release/$program $pkg_prefix/bin/$program
+  cp -r $HAB_CACHE_SRC_PATH/$pkg_dirname/$program/data $pkg_prefix/data
 }
 
 do_strip() {
